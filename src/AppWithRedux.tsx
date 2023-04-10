@@ -12,6 +12,8 @@ import {
 } from './state/todolists-user-reducer';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppRootState} from './state/store';
+import {useCallback} from 'react';
+import {addTaskAC} from './state/task-user-reducer';
 
 
 export type FilterValuesType = 'all' | 'completed' | 'active';
@@ -26,32 +28,30 @@ export type TasksStateType = {
 
 function AppWithRedux() {
 
-    const dispatch = useDispatch()
+
     const todolists = useSelector<AppRootState, Array<TodolistType>>(state => state.todolists)
+    const dispatch = useDispatch();
 
-
-
-    function changeFilter(value: FilterValuesType, todolistId: string) {
+    const addTask= useCallback ( function (title:string,todolistId: string ){
+        const action=addTaskAC(title,todolistId);
+        dispatch(action)
+    },[dispatch]);
+    const changeFilter= useCallback( function (value: FilterValuesType, todolistId: string) {
         const action = changeTodolistFilterAC(value, todolistId);
         dispatch(action);
-    }
-
-
-    function removeTodolist(todolistId: string) {
+    },[dispatch]);
+    const removeTodolist= useCallback( function (todolistId: string) {
         const action = removeTodolistAC(todolistId);
         dispatch(action);
-    }
-
-    function changeTodolistTitle(id: string, newTitle: string,) {
+    },[dispatch]);
+    const changeTodolistTitle= useCallback(function (id: string, newTitle: string,) {
         const action = changeTodolistTitleAC(id, newTitle)
         dispatch(action);
-    }
-
-
-    function addTodolist(title: string) {
+    },[dispatch]);
+    const addTodolist = useCallback((title: string) => {
         const action = addTodolistAC(title);
         dispatch(action);
-    }
+    },[dispatch]);
 
     return (
         <div className="App">
@@ -92,6 +92,7 @@ function AppWithRedux() {
                                         filter={tl.filter}
                                         removeTodolist={removeTodolist}
                                         changeTodolistTitle={changeTodolistTitle}
+                                        addTask={addTask}
                                     />
                                 </Paper>
                             </Grid>
